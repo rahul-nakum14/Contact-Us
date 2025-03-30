@@ -1,6 +1,6 @@
 import app from "./app";
 import { ENV } from "./config/env";
-import { logger } from "./utils/logger";
+import logger from "./utils/logger";
 
 const startServer = async () => {
   app.listen(ENV.PORT, () => {
