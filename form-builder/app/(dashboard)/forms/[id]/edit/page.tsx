@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, useParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -17,9 +17,10 @@ import { fetchForm, updateForm } from "@/lib/api"
 import toast from "react-hot-toast"
 import Link from "next/link"
 
-export default function EditFormPage({ params }) {
-  const router = useRouter()
-  const { id } = params
+export default function EditFormPage() {
+  const params = useParams()
+    const id = params?.id as string
+    const router = useRouter()
   const [activeTab, setActiveTab] = useState("builder")
   const [isLoading, setIsLoading] = useState(true)
   const [isSubmitting, setIsSubmitting] = useState(false)

@@ -1,6 +1,6 @@
 import axios from "axios"
 
-const API_URL = "https://urban-eureka-6qgj4g649x42r4xr-3000.app.github.dev/api/v1"
+const API_URL = "http://localhost:3000/api/v1"
 
 // Create axios instance with auth header
 const api = axios.create({
