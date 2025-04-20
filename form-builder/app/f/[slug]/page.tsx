@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, useParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -13,11 +13,12 @@ import { fetchPublicForm, submitFormResponse } from "@/lib/api"
 import toast from "react-hot-toast"
 import { Layers } from "lucide-react"
 import Link from "next/link"
-import { use } from "react"
 
-export default function PublicFormPage({ params }) {
-    const unwrappedParams = use(params) // Unwrap the params Promise
-    const { slug } = unwrappedParams
+export default function PublicFormPage() {
+    const params = useParams()
+    const id = params?.id as string
+    const router = useRouter()
+    const { slug } = params
   const [form, setForm] = useState(null)
   const [formData, setFormData] = useState({})
   const [isLoading, setIsLoading] = useState(true)
@@ -88,6 +89,11 @@ export default function PublicFormPage({ params }) {
   }
 
   const renderField = (field) => {
+    // Skip hidden fields
+    if (field.data?.hidden) {
+      return null
+    }
+
     switch (field.type) {
       case "text":
         return (
@@ -101,6 +107,7 @@ export default function PublicFormPage({ params }) {
               placeholder={field.data?.placeholder || ""}
               value={formData[field.id] || ""}
               onChange={(e) => handleInputChange(field.id, e.target.value)}
+              style={{ backgroundColor: field.data?.backgroundColor || "#ffffff" }}
             />
             {field.data?.helpText && <p className="text-xs text-gray-500">{field.data.helpText}</p>}
           </div>
@@ -119,6 +126,7 @@ export default function PublicFormPage({ params }) {
               placeholder={field.data?.placeholder || ""}
               value={formData[field.id] || ""}
               onChange={(e) => handleInputChange(field.id, e.target.value)}
+              style={{ backgroundColor: field.data?.backgroundColor || "#ffffff" }}
             />
             {field.data?.helpText && <p className="text-xs text-gray-500">{field.data.helpText}</p>}
           </div>
@@ -137,6 +145,7 @@ export default function PublicFormPage({ params }) {
               rows={field.data?.rows || 3}
               value={formData[field.id] || ""}
               onChange={(e) => handleInputChange(field.id, e.target.value)}
+              style={{ backgroundColor: field.data?.backgroundColor || "#ffffff" }}
             />
             {field.data?.helpText && <p className="text-xs text-gray-500">{field.data.helpText}</p>}
           </div>
@@ -150,7 +159,7 @@ export default function PublicFormPage({ params }) {
               {field.required && <span className="text-red-500 ml-1">*</span>}
             </Label>
             <Select value={formData[field.id] || ""} onValueChange={(value) => handleInputChange(field.id, value)}>
-              <SelectTrigger id={field.id}>
+              <SelectTrigger id={field.id} style={{ backgroundColor: field.data?.backgroundColor || "#ffffff" }}>
                 <SelectValue placeholder={field.data?.placeholder || "Select an option"} />
               </SelectTrigger>
               <SelectContent>
@@ -230,6 +239,7 @@ export default function PublicFormPage({ params }) {
               max={field.data?.max}
               value={formData[field.id] || ""}
               onChange={(e) => handleInputChange(field.id, e.target.value ? Number(e.target.value) : "")}
+              style={{ backgroundColor: field.data?.backgroundColor || "#ffffff" }}
             />
             {field.data?.helpText && <p className="text-xs text-gray-500">{field.data.helpText}</p>}
           </div>
@@ -247,6 +257,7 @@ export default function PublicFormPage({ params }) {
               type="date"
               value={formData[field.id] || ""}
               onChange={(e) => handleInputChange(field.id, e.target.value)}
+              style={{ backgroundColor: field.data?.backgroundColor || "#ffffff" }}
             />
             {field.data?.helpText && <p className="text-xs text-gray-500">{field.data.helpText}</p>}
           </div>
@@ -265,6 +276,7 @@ export default function PublicFormPage({ params }) {
               placeholder={field.data?.placeholder || ""}
               value={formData[field.id] || ""}
               onChange={(e) => handleInputChange(field.id, e.target.value)}
+              style={{ backgroundColor: field.data?.backgroundColor || "#ffffff" }}
             />
             {field.data?.helpText && <p className="text-xs text-gray-500">{field.data.helpText}</p>}
           </div>
@@ -289,6 +301,93 @@ export default function PublicFormPage({ params }) {
             />
             {field.data?.helpText && <p className="text-xs text-gray-500">{field.data.helpText}</p>}
           </div>
+        )
+
+      case "rating":
+        return (
+          <div key={field.id} className="space-y-2">
+            <Label htmlFor={field.id}>
+              {field.label}
+              {field.required && <span className="text-red-500 ml-1">*</span>}
+            </Label>
+            <div className="flex items-center gap-1">
+              {Array.from({ length: field.data?.maxRating || 5 }).map((_, i) => (
+                <button
+                  key={i}
+                  type="button"
+                  className={`p-1 rounded-md hover:bg-purple-50 ${
+                    (formData[field.id] || 0) > i ? "text-yellow-400" : "text-gray-300"
+                  }`}
+                  onClick={() => handleInputChange(field.id, i + 1)}
+                >
+                  <svg className="h-6 w-6 fill-current" viewBox="0 0 20 20">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                  </svg>
+                </button>
+              ))}
+            </div>
+            {field.data?.helpText && <p className="text-xs text-gray-500">{field.data.helpText}</p>}
+          </div>
+        )
+
+      case "signature":
+        return (
+          <div key={field.id} className="space-y-2">
+            <Label htmlFor={field.id}>
+              {field.label}
+              {field.required && <span className="text-red-500 ml-1">*</span>}
+            </Label>
+            <div className="border rounded-md p-4 bg-gray-50 h-32 flex items-center justify-center cursor-pointer">
+              <div className="text-center">
+                <svg
+                  className="h-8 w-8 text-gray-400 mx-auto mb-2"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+                  />
+                </svg>
+                <p className="text-sm text-gray-500">Click to sign</p>
+              </div>
+            </div>
+            {field.data?.helpText && <p className="text-xs text-gray-500">{field.data.helpText}</p>}
+          </div>
+        )
+
+      case "divider":
+        return <hr key={field.id} className="border-gray-300 my-4" />
+
+      case "heading1":
+        return (
+          <h1 key={field.id} className="text-2xl font-bold mt-6 mb-2">
+            {field.data?.text || field.label}
+          </h1>
+        )
+
+      case "heading2":
+        return (
+          <h2 key={field.id} className="text-xl font-bold mt-5 mb-2">
+            {field.data?.text || field.label}
+          </h2>
+        )
+
+      case "heading3":
+        return (
+          <h3 key={field.id} className="text-lg font-bold mt-4 mb-2">
+            {field.data?.text || field.label}
+          </h3>
+        )
+
+      case "paragraph":
+        return (
+          <p key={field.id} className="text-gray-700 mb-4">
+            {field.data?.text || field.label}
+          </p>
         )
 
       default:
