@@ -25,30 +25,23 @@ export default function DashboardPage() {
       try {
         const formsData = await fetchForms()
         setForms(formsData.slice(0, 3)) // Show only 3 most recent forms
-  
+
         // Calculate stats
         const totalForms = formsData.length
         let totalResponses = 0
         let recentResponses = 0
-  
+
         // Get response counts for each form
         for (const form of formsData) {
-          const formStats = await fetchFormStats(form._id)
-          totalResponses += formStats.totalResponses
-  
-          // Count responses from the last 7 days
-          const lastWeek = new Date()
-          lastWeek.setDate(lastWeek.getDate() - 7)
-  
-          // Use timeline instead of responsesPerDay
-          formStats.timeline?.forEach((day) => {
-            const dayDate = new Date(day.date) // Note: using day.date instead of day._id
-            if (dayDate >= lastWeek) {
-              recentResponses += day.count
-            }
-          })
+          try {
+            const formStats = await fetchFormStats(form._id)
+            totalResponses += formStats.totalResponses || 0
+            recentResponses += formStats.recentResponses || 0
+          } catch (error) {
+            console.error(`Error fetching stats for form ${form._id}:`, error)
+          }
         }
-  
+
         setStats({
           totalForms,
           totalResponses,
@@ -60,7 +53,7 @@ export default function DashboardPage() {
         setIsLoading(false)
       }
     }
-  
+
     loadData()
   }, [])
 

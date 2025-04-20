@@ -3,27 +3,25 @@
 import { useState, useEffect } from "react"
 import { useRouter, useParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { ArrowLeft, Save } from "lucide-react"
+import { ArrowLeft, Save, Eye, Share2, Download } from "lucide-react"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import FormBuilder from "@/components/form-builder/builder"
-import StyleEditor from "@/components/form-builder/style-editor"
-import SettingsPanel from "@/components/form-builder/settings-panel"
-import FormPreview from "@/components/form-builder/form-preview"
 import { fetchForm, updateForm } from "@/lib/api"
 import toast from "react-hot-toast"
 import Link from "next/link"
+import FullScreenFormBuilder from "@/components/form-builder/full-screen-builder"
+import FormPreviewMode from "@/components/form-builder/form-preview-mode"
+import ShareFormDialog from "@/components/form-builder/share-form-dialog"
+import ExportFormDialog from "@/components/form-builder/export-form-dialog"
 
 export default function EditFormPage() {
-  const params = useParams()
+    const params = useParams()
     const id = params?.id as string
     const router = useRouter()
-  const [activeTab, setActiveTab] = useState("builder")
   const [isLoading, setIsLoading] = useState(true)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [previewMode, setPreviewMode] = useState(false)
+  const [shareDialogOpen, setShareDialogOpen] = useState(false)
+  const [exportDialogOpen, setExportDialogOpen] = useState(false)
   const [formData, setFormData] = useState(null)
 
   useEffect(() => {
@@ -102,88 +100,70 @@ export default function EditFormPage() {
     )
   }
 
+  if (previewMode) {
+    return <FormPreviewMode formData={formData} onExitPreview={() => setPreviewMode(false)} />
+  }
+
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div className="flex flex-col h-screen overflow-hidden">
+      {/* Header */}
+      <div className="flex items-center justify-between p-4 border-b bg-white">
         <div className="flex items-center gap-2">
           <Link href="/forms">
             <Button variant="ghost" size="icon">
               <ArrowLeft className="h-4 w-4" />
             </Button>
           </Link>
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight">Edit Form</h1>
-            <p className="text-muted-foreground">Update your form design and settings</p>
+          <div className="flex items-center gap-3">
+            <Input
+              value={formData.title}
+              onChange={(e) => handleFormChange("title", e.target.value)}
+              className="text-lg font-medium h-9 w-64 border-transparent focus-visible:border-input"
+              placeholder="Untitled Form"
+            />
           </div>
         </div>
-        <Button onClick={handleSubmit} disabled={isSubmitting}>
-          <Save className="mr-2 h-4 w-4" />
-          {isSubmitting ? "Saving..." : "Save changes"}
-        </Button>
-      </div>
 
-      <div className="grid gap-6 md:grid-cols-3">
-        <div className="md:col-span-2 space-y-6">
-          <Card>
-            <CardContent className="p-6">
-              <div className="space-y-4">
-                <div>
-                  <Label htmlFor="title">Form Title</Label>
-                  <Input
-                    id="title"
-                    value={formData.title}
-                    onChange={(e) => handleFormChange("title", e.target.value)}
-                    className="text-lg font-medium"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="description">Description (optional)</Label>
-                  <Textarea
-                    id="description"
-                    value={formData.description}
-                    onChange={(e) => handleFormChange("description", e.target.value)}
-                    placeholder="Enter a description for your form"
-                    className="resize-none"
-                  />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="sm" onClick={() => setPreviewMode(true)} className="gap-1.5">
+            <Eye className="h-4 w-4" /> Preview
+          </Button>
 
-          <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid grid-cols-3">
-              <TabsTrigger value="builder">Form Builder</TabsTrigger>
-              <TabsTrigger value="style">Style</TabsTrigger>
-              <TabsTrigger value="settings">Settings</TabsTrigger>
-            </TabsList>
-            <TabsContent value="builder" className="mt-4">
-              <FormBuilder fields={formData.fields} onFieldsChange={handleFieldsChange} />
-            </TabsContent>
-            <TabsContent value="style" className="mt-4">
-              <StyleEditor styles={formData.styles} onStylesChange={handleStylesChange} />
-            </TabsContent>
-            <TabsContent value="settings" className="mt-4">
-              <SettingsPanel settings={formData.settings} onSettingsChange={handleSettingsChange} />
-            </TabsContent>
-          </Tabs>
-        </div>
+          <Button variant="outline" size="sm" onClick={() => setShareDialogOpen(true)} className="gap-1.5">
+            <Share2 className="h-4 w-4" /> Share
+          </Button>
 
-        <div>
-          <div className="sticky top-6">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-medium">Preview</h2>
-              <Link href={`/f/${formData.slug}`} target="_blank">
-                <Button variant="outline" size="sm">
-                  View live form
-                </Button>
-              </Link>
-            </div>
-            <div className="rounded-lg overflow-hidden border border-gray-200">
-              <FormPreview formData={formData} />
-            </div>
-          </div>
+          <Button variant="outline" size="sm" onClick={() => setExportDialogOpen(true)} className="gap-1.5">
+            <Download className="h-4 w-4" /> Export
+          </Button>
+
+          <Button
+            onClick={handleSubmit}
+            disabled={isSubmitting}
+            size="sm"
+            className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 gap-1.5"
+          >
+            <Save className="h-4 w-4" />
+            {isSubmitting ? "Saving..." : "Save changes"}
+          </Button>
         </div>
       </div>
+
+      {/* Main Content */}
+      <div className="flex-1 overflow-hidden">
+        <FullScreenFormBuilder
+          formData={formData}
+          onFieldsChange={handleFieldsChange}
+          onStylesChange={handleStylesChange}
+          onSettingsChange={handleSettingsChange}
+        />
+      </div>
+
+      {/* Share Dialog */}
+      <ShareFormDialog open={shareDialogOpen} onOpenChange={setShareDialogOpen} formData={formData} isNewForm={false} />
+
+      {/* Export Dialog */}
+      <ExportFormDialog open={exportDialogOpen} onOpenChange={setExportDialogOpen} formData={formData} />
     </div>
   )
 }

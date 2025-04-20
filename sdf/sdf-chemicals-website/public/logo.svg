@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <circle cx="50" cy="50" r="45" fill="#0d9488" />
+  <circle cx="50" cy="50" r="38" fill="white" />
+  <circle cx="50" cy="50" r="32" fill="#0d9488" />
+  <circle cx="50" cy="50" r="25" fill="white" />
+  <text x="50" y="55" font-family="Arial" font-size="16" font-weight="bold" text-anchor="middle" fill="#0d9488">SDF</text>
+</svg>
