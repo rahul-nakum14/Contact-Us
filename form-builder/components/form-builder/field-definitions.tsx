@@ -1,27 +1,6 @@
-import {
-  Type,
-  Mail,
-  AlignLeft,
-  List,
-  CheckSquare,
-  CircleDot,
-  Hash,
-  Calendar,
-  Phone,
-  Upload,
-  Clock,
-  SeparatorHorizontal,
-  ImageIcon,
-  FileVideo,
-  FileAudio,
-  Code,
-  Heading1,
-  Heading2,
-  Heading3,
-  NotepadTextIcon as Paragraph,
-} from "lucide-react"
+import { Type, Mail, AlignLeft, List, CheckSquare, CircleDot, Hash, Calendar, Phone, Upload, Clock } from "lucide-react"
 
-// Basic field types - Added Time to basic fields as requested
+// Basic field types - simplified for MVP
 export const basicFields = [
   {
     id: "text",
@@ -100,97 +79,7 @@ export const basicFields = [
   },
 ]
 
-// Layout components - Removed unnecessary fields as requested
-export const layoutComponents = [
-  {
-    id: "heading1",
-    name: "Heading 1",
-    icon: Heading1,
-    description: "Large heading",
-    defaultData: {
-      text: "Heading 1",
-    },
-  },
-  {
-    id: "heading2",
-    name: "Heading 2",
-    icon: Heading2,
-    description: "Medium heading",
-    defaultData: {
-      text: "Heading 2",
-    },
-  },
-  {
-    id: "heading3",
-    name: "Heading 3",
-    icon: Heading3,
-    description: "Small heading",
-    defaultData: {
-      text: "Heading 3",
-    },
-  },
-  {
-    id: "paragraph",
-    name: "Paragraph",
-    icon: Paragraph,
-    description: "Text paragraph",
-    defaultData: {
-      text: "Enter your text here",
-    },
-  },
-  {
-    id: "divider",
-    name: "Divider",
-    icon: SeparatorHorizontal,
-    description: "Horizontal separator",
-  },
-]
-
-// Media components - Kept all media components as requested
-export const mediaComponents = [
-  {
-    id: "image",
-    name: "Image",
-    icon: ImageIcon,
-    description: "Display an image",
-    defaultData: {
-      url: "",
-      alt: "Image description",
-      width: 300,
-      height: 200,
-    },
-  },
-  {
-    id: "video",
-    name: "Video",
-    icon: FileVideo,
-    description: "Embed a video",
-    defaultData: {
-      url: "",
-      width: 560,
-      height: 315,
-    },
-  },
-  {
-    id: "audio",
-    name: "Audio",
-    icon: FileAudio,
-    description: "Embed audio",
-    defaultData: {
-      url: "",
-    },
-  },
-  {
-    id: "embed",
-    name: "Embed",
-    icon: Code,
-    description: "Embed external content",
-    defaultData: {
-      code: "",
-      width: "100%",
-      height: 300,
-    },
-  },
-]
-
+// Empty arrays for unused categories in MVP
+export const layoutComponents = []
+export const mediaComponents = []
 export const advancedFields = []

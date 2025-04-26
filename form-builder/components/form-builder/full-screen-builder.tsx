@@ -14,19 +14,17 @@ import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSo
 import { restrictToVerticalAxis, restrictToWindowEdges } from "@dnd-kit/modifiers"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Separator } from "@/components/ui/separator"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Plus, Trash2 } from "lucide-react"
 import { v4 as uuidv4 } from "uuid"
 
-import ComponentCategory from "@/components/form-builder/component-category"
 import FormCanvas from "@/components/form-builder/form-canvas"
 import StylePanel from "@/components/form-builder/style-panel"
 import SettingsPanel from "@/components/form-builder/settings-panel"
 import PropertiesPanel from "@/components/form-builder/properties-panel"
-import { basicFields, layoutComponents, mediaComponents } from "@/components/form-builder/field-definitions"
+import { basicFields } from "@/components/form-builder/field-definitions"
 
 export default function FullScreenFormBuilder({ formData, onFieldsChange, onStylesChange, onSettingsChange }) {
   const [activeTab, setActiveTab] = useState("components")
@@ -122,8 +120,7 @@ export default function FullScreenFormBuilder({ formData, onFieldsChange, onStyl
 
   const addField = (fieldType, index = formData.fields.length) => {
     // Find the field definition
-    const allFieldTypes = [...basicFields, ...layoutComponents, ...mediaComponents]
-    const fieldDef = allFieldTypes.find((field) => field.id === fieldType)
+    const fieldDef = basicFields.find((field) => field.id === fieldType)
 
     if (!fieldDef) return
 
@@ -147,7 +144,6 @@ export default function FullScreenFormBuilder({ formData, onFieldsChange, onStyl
 
     // Select the new field
     setSelectedField(newField)
-    setActiveTab("properties")
   }
 
   const updateField = (fieldId, updates) => {
@@ -220,7 +216,7 @@ export default function FullScreenFormBuilder({ formData, onFieldsChange, onStyl
     >
       <div className="flex h-full">
         {/* Left Sidebar */}
-        <div className="w-72 bg-white border-r flex flex-col">
+        <div className="w-64 bg-white border-r flex flex-col">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full flex flex-col">
             <div className="border-b">
               <TabsList className="w-full justify-start rounded-none px-4 h-12">
@@ -237,75 +233,50 @@ export default function FullScreenFormBuilder({ formData, onFieldsChange, onStyl
             </div>
 
             <TabsContent value="components" className="flex-1 p-0 m-0">
-              <div className="p-4 border-b">
-                <Button onClick={() => addField("text")} className="w-full bg-purple-600 hover:bg-purple-700">
-                  <Plus className="h-4 w-4 mr-2" /> Add Field
-                </Button>
-              </div>
-              <ScrollArea className="h-[calc(100vh-8.5rem)]">
-                <div className="p-4 space-y-6">
-                  <ComponentCategory
-                    title="Basic Fields"
-                    components={basicFields}
-                    color="bg-blue-50"
-                    textColor="text-blue-600"
-                    onAddComponent={addField}
-                  />
-
-                  <Separator />
-
-                  <ComponentCategory
-                    title="Layout"
-                    components={layoutComponents}
-                    color="bg-amber-50"
-                    textColor="text-amber-600"
-                    onAddComponent={addField}
-                  />
-
-                  <Separator />
-
-                  <ComponentCategory
-                    title="Media"
-                    components={mediaComponents}
-                    color="bg-emerald-50"
-                    textColor="text-emerald-600"
-                    onAddComponent={addField}
-                  />
+              <ScrollArea className="h-[calc(100vh-4rem)]">
+                <div className="p-4 space-y-4">
+                  <div className="grid grid-cols-1 gap-2">
+                    {basicFields.map((field) => (
+                      <div
+                        key={field.id}
+                        className="flex items-center p-3 border rounded-md hover:bg-gray-50 cursor-pointer"
+                        onClick={() => addField(field.id)}
+                      >
+                        <div className="h-8 w-8 bg-blue-50 rounded-md flex items-center justify-center mr-3">
+                          <field.icon className="h-4 w-4 text-blue-600" />
+                        </div>
+                        <div>
+                          <div className="font-medium text-sm">{field.name}</div>
+                          <div className="text-xs text-gray-500">{field.description}</div>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="ml-auto h-7 w-7 p-0"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            addField(field.id)
+                          }}
+                        >
+                          <Plus className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </ScrollArea>
             </TabsContent>
 
             <TabsContent value="styles" className="flex-1 p-0 m-0">
               <ScrollArea className="h-[calc(100vh-4rem)]">
-                <div className="p-4">
-                  <StylePanel styles={formData.styles} onStylesChange={onStylesChange} />
-                </div>
+                <StylePanel styles={formData.styles} onStylesChange={onStylesChange} />
               </ScrollArea>
             </TabsContent>
 
             <TabsContent value="settings" className="flex-1 p-0 m-0">
               <ScrollArea className="h-[calc(100vh-4rem)]">
-                <div className="p-4">
-                  <SettingsPanel settings={formData.settings} onSettingsChange={onSettingsChange} />
-                </div>
+                <SettingsPanel settings={formData.settings} onSettingsChange={onSettingsChange} />
               </ScrollArea>
-            </TabsContent>
-
-            <TabsContent value="properties" className="flex-1 p-0 m-0">
-              {selectedField ? (
-                <PropertiesPanel
-                  field={selectedField}
-                  onChange={(updates) => updateField(selectedField.id, updates)}
-                  onClose={() => {
-                    setSelectedField(null)
-                    setActiveTab("components")
-                  }}
-                />
-              ) : (
-                <div className="p-4 text-center text-gray-500">
-                  <p>Select a field to edit its properties</p>
-                </div>
-              )}
             </TabsContent>
           </Tabs>
         </div>
@@ -352,7 +323,6 @@ export default function FullScreenFormBuilder({ formData, onFieldsChange, onStyl
                 selectedField={selectedField}
                 onSelectField={(field) => {
                   setSelectedField(field)
-                  setActiveTab("properties")
                 }}
                 onUpdateField={updateField}
                 onRemoveField={removeField}
@@ -363,7 +333,7 @@ export default function FullScreenFormBuilder({ formData, onFieldsChange, onStyl
           </ScrollArea>
         </div>
 
-        {/* Right Properties Panel */}
+        {/* Right Properties Panel - Only shown when a field is selected */}
         {selectedField && (
           <div className="w-80 bg-white border-l h-full overflow-hidden">
             <PropertiesPanel

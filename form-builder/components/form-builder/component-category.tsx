@@ -1,44 +1,22 @@
 "use client"
 
-import { useState } from "react"
 import { useDraggable } from "@dnd-kit/core"
-import { Button } from "@/components/ui/button"
-import { ChevronDown, ChevronRight, Plus } from "lucide-react"
 import { cn } from "@/lib/utils"
 
-export default function ComponentCategory({ title, components, color, textColor, onAddComponent }) {
-  const [isExpanded, setIsExpanded] = useState(true)
-
+export default function ComponentCategory({ title, components, color, textColor }) {
   return (
-    <div className="space-y-2 mb-4">
-      <div className="flex items-center justify-between">
-        <button
-          onClick={() => setIsExpanded(!isExpanded)}
-          className="flex items-center text-sm font-medium hover:text-gray-900 w-full text-left"
-        >
-          {isExpanded ? <ChevronDown className="h-4 w-4 mr-1" /> : <ChevronRight className="h-4 w-4 mr-1" />}
-          {title}
-        </button>
+    <div className="space-y-3">
+      <h3 className="text-sm font-medium text-gray-500">{title}</h3>
+      <div className="grid grid-cols-1 gap-2">
+        {components.map((component) => (
+          <DraggableComponent key={component.id} component={component} color={color} textColor={textColor} />
+        ))}
       </div>
-
-      {isExpanded && (
-        <div className="grid grid-cols-2 gap-2">
-          {components.map((component) => (
-            <ComponentItem
-              key={component.id}
-              component={component}
-              color={color}
-              textColor={textColor}
-              onAddComponent={() => onAddComponent(component.id)}
-            />
-          ))}
-        </div>
-      )}
     </div>
   )
 }
 
-function ComponentItem({ component, color, textColor, onAddComponent }) {
+function DraggableComponent({ component, color, textColor }) {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: `palette-${component.id}`,
     data: {
@@ -50,34 +28,20 @@ function ComponentItem({ component, color, textColor, onAddComponent }) {
   return (
     <div
       ref={setNodeRef}
-      {...listeners}
       {...attributes}
+      {...listeners}
       className={cn(
-        "flex flex-col items-center p-2 rounded-md cursor-grab transition-all",
-        color,
-        isDragging ? "opacity-50 ring-2 ring-purple-300" : "hover:ring-2 hover:ring-purple-300",
+        "flex items-center gap-2 p-3 border rounded-md cursor-grab bg-white hover:bg-gray-50 hover:border-gray-300 transition-colors",
+        isDragging ? "opacity-50" : "",
       )}
     >
-      <div className="flex items-center justify-between w-full mb-1">
-        <div className="flex items-center">
-          <component.icon className={cn("h-4 w-4 mr-2", textColor)} />
-          <span className="text-xs font-medium">{component.name}</span>
-        </div>
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          className="h-5 w-5 rounded-full hover:bg-white/50"
-          onClick={(e) => {
-            e.stopPropagation()
-            onAddComponent()
-          }}
-        >
-          <Plus className="h-3 w-3" />
-          <span className="sr-only">Add {component.name}</span>
-        </Button>
+      <div className={cn("h-8 w-8 rounded-md flex items-center justify-center", color)}>
+        {component.icon && <component.icon className={cn("h-4 w-4", textColor)} />}
       </div>
-      <p className="text-xs text-gray-600 w-full truncate">{component.description}</p>
+      <div className="flex-1 min-w-0">
+        <div className="font-medium text-sm">{component.name}</div>
+        <div className="text-xs text-gray-500 truncate">{component.description}</div>
+      </div>
     </div>
   )
 }

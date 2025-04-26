@@ -5,7 +5,6 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { ScrollArea } from "@/components/ui/scroll-area"
 import { useAuth } from "@/lib/auth-provider"
 import { ChevronLeft, ChevronRight, LayoutDashboard, FileText, Settings, LogOut, User } from "lucide-react"
 
@@ -36,29 +35,29 @@ export default function Sidebar() {
     <div
       className={cn(
         "fixed left-0 top-0 z-20 h-full bg-white border-r transition-all duration-300",
-        collapsed ? "w-16" : "w-64",
+        collapsed ? "w-14" : "w-60",
       )}
     >
       <div className="flex h-full flex-col">
-        <div className="flex h-16 items-center justify-between border-b px-4">
+        <div className="flex h-14 items-center justify-between border-b px-4">
           {!collapsed && (
             <Link href="/dashboard" className="flex items-center">
-              <span className="text-xl font-bold text-purple-600">FormBuilder</span>
+              <span className="text-lg font-bold text-purple-600">FormBuilder</span>
             </Link>
           )}
           <Button
             variant="ghost"
             size="icon"
             onClick={toggleSidebar}
-            className={cn("h-8 w-8", collapsed && "mx-auto")}
+            className={cn("h-7 w-7", collapsed && "mx-auto")}
             aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
           >
             {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
           </Button>
         </div>
 
-        <ScrollArea className="flex-1 py-4">
-          <nav className="space-y-1 px-2">
+        <nav className="flex-1 py-4">
+          <div className="space-y-1 px-2">
             <NavItem
               href="/dashboard"
               icon={LayoutDashboard}
@@ -80,8 +79,8 @@ export default function Sidebar() {
               active={pathname === "/settings"}
               collapsed={collapsed}
             />
-          </nav>
-        </ScrollArea>
+          </div>
+        </nav>
 
         <div className="border-t p-4">
           <div className={cn("flex items-center", collapsed ? "justify-center" : "justify-between")}>
