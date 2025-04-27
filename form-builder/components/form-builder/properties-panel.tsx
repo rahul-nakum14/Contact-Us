@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
-import { Textarea } from "@/components/ui/textarea"
 import { X, Plus, Trash2 } from "lucide-react"
 
 export default function PropertiesPanel({ field, onChange, onClose }) {
@@ -98,39 +97,31 @@ export default function PropertiesPanel({ field, onChange, onClose }) {
                 onCheckedChange={(checked) => onChange({ required: checked })}
               />
             </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="helpText">Help Text (Optional)</Label>
-              <Textarea
-                id="helpText"
-                value={field.data?.helpText || ""}
-                placeholder="Additional information about this field"
-                onChange={(e) => updateFieldData("helpText", e.target.value)}
-              />
-            </div>
           </div>
 
           {(field.type === "select" || field.type === "radio" || field.type === "checkbox") && (
-            <div className="space-y-3">
-              <Label>Options</Label>
-              {options.map((option, index) => (
-                <div key={index} className="flex items-center space-x-2">
-                  <Input value={option} onChange={(e) => handleOptionChange(index, e.target.value)} />
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => removeOption(index)}
-                    disabled={options.length <= 1}
-                    className="h-8 w-8"
-                  >
-                    <Trash2 className="h-4 w-4 text-red-500" />
-                  </Button>
-                </div>
-              ))}
-              <Button variant="outline" size="sm" onClick={addOption} className="w-full">
-                <Plus className="h-4 w-4 mr-2" />
-                Add Option
-              </Button>
+            <div>
+              <Label className="mb-3 block">Options</Label>
+              <div className="space-y-3">
+                {options.map((option, index) => (
+                  <div key={index} className="flex items-center space-x-2">
+                    <Input value={option} onChange={(e) => handleOptionChange(index, e.target.value)} />
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => removeOption(index)}
+                      disabled={options.length <= 1}
+                      className="h-8 w-8"
+                    >
+                      <Trash2 className="h-4 w-4 text-red-500" />
+                    </Button>
+                  </div>
+                ))}
+                <Button variant="outline" size="sm" onClick={addOption} className="w-full">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Option
+                </Button>
+              </div>
             </div>
           )}
         </div>

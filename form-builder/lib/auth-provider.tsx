@@ -7,7 +7,7 @@ import axios from "axios"
 import { jwtDecode } from "jwt-decode"
 import { useRouter } from "next/navigation"
 
-const API_URL = "https://urban-eureka-6qgj4g649x42r4xr-3000.app.github.dev/api/v1"
+const API_URL = "https://ubiquitous-space-trout-jv5xq56qjv7c5rqx-3000.app.github.dev/api/v1"
 
 type User = {
   id: string

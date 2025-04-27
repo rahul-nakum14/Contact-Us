@@ -75,8 +75,21 @@ const FormCanvas = forwardRef(
                       backgroundColor: formData.styles.buttonStyle.backgroundColor,
                       color: formData.styles.buttonStyle.textColor,
                       borderRadius: formData.styles.buttonStyle.borderRadius,
+                      width: formData.styles.buttonStyle.width || "auto",
+                      padding:
+                        formData.styles.buttonStyle.size === "sm"
+                          ? "0.5rem 1rem"
+                          : formData.styles.buttonStyle.size === "lg"
+                            ? "0.75rem 1.5rem"
+                            : "0.625rem 1.25rem",
+                      fontSize:
+                        formData.styles.buttonStyle.size === "sm"
+                          ? "0.875rem"
+                          : formData.styles.buttonStyle.size === "lg"
+                            ? "1.125rem"
+                            : "1rem",
                     }}
-                    className="px-4 py-2 font-medium"
+                    className="font-medium"
                     onClick={(e) => e.preventDefault()}
                   >
                     {formData.settings.submitButtonText || "Submit"}
@@ -213,10 +226,9 @@ function renderFieldPreview(field) {
         />
       )
     case "number":
-    case "phone":
       return (
         <input
-          type={field.type === "number" ? "number" : "tel"}
+          type="number"
           placeholder={field.data?.placeholder || `Enter ${field.label}`}
           className="w-full px-3 py-1.5 border border-gray-300 rounded-md text-gray-500 bg-gray-50"
           disabled

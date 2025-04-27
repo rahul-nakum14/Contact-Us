@@ -19,10 +19,11 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Plus, Trash2 } from "lucide-react"
 import { v4 as uuidv4 } from "uuid"
+import { Card, CardContent } from "@/components/ui/card"
+import { Label } from "@/components/ui/label"
 
 import FormCanvas from "@/components/form-builder/form-canvas"
 import StylePanel from "@/components/form-builder/style-panel"
-import SettingsPanel from "@/components/form-builder/settings-panel"
 import PropertiesPanel from "@/components/form-builder/properties-panel"
 import { basicFields } from "@/components/form-builder/field-definitions"
 
@@ -32,6 +33,19 @@ export default function FullScreenFormBuilder({ formData, onFieldsChange, onStyl
   const [activeComponent, setActiveComponent] = useState(null)
   const [dropIndicator, setDropIndicator] = useState({ show: false, index: 0 })
   const canvasRef = useRef(null)
+
+  // Initialize pageStyle if it doesn't exist
+  useEffect(() => {
+    if (!formData.styles.pageStyle) {
+      onStylesChange({
+        ...formData.styles,
+        pageStyle: {
+          backgroundColor: "#f9fafb",
+          backgroundImage: "",
+        },
+      })
+    }
+  }, [formData.styles, onStylesChange])
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -204,6 +218,26 @@ export default function FullScreenFormBuilder({ formData, onFieldsChange, onStyl
     }
   }
 
+  // Get background styles for the canvas
+  const getBackgroundStyles = () => {
+    const styles = {}
+
+    if (formData.styles.pageStyle) {
+      if (formData.styles.pageStyle.backgroundColor) {
+        styles.backgroundColor = formData.styles.pageStyle.backgroundColor
+      }
+
+      if (formData.styles.pageStyle.backgroundImage) {
+        styles.backgroundImage = formData.styles.pageStyle.backgroundImage
+        styles.backgroundSize = "cover"
+        styles.backgroundPosition = "center"
+        styles.backgroundRepeat = "no-repeat"
+      }
+    }
+
+    return styles
+  }
+
   return (
     <DndContext
       sensors={sensors}
@@ -220,13 +254,13 @@ export default function FullScreenFormBuilder({ formData, onFieldsChange, onStyl
           <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full flex flex-col">
             <div className="border-b">
               <TabsList className="w-full justify-start rounded-none px-4 h-12">
-                <TabsTrigger value="components" className="data-[state=active]:bg-purple-50">
+                <TabsTrigger value="components" className="data-[state=active]:bg-blue-50">
                   Components
                 </TabsTrigger>
-                <TabsTrigger value="styles" className="data-[state=active]:bg-purple-50">
+                <TabsTrigger value="styles" className="data-[state=active]:bg-blue-50">
                   Styles
                 </TabsTrigger>
-                <TabsTrigger value="settings" className="data-[state=active]:bg-purple-50">
+                <TabsTrigger value="settings" className="data-[state=active]:bg-blue-50">
                   Settings
                 </TabsTrigger>
               </TabsList>
@@ -234,35 +268,45 @@ export default function FullScreenFormBuilder({ formData, onFieldsChange, onStyl
 
             <TabsContent value="components" className="flex-1 p-0 m-0">
               <ScrollArea className="h-[calc(100vh-4rem)]">
-                <div className="p-4 space-y-4">
-                  <div className="grid grid-cols-1 gap-2">
-                    {basicFields.map((field) => (
-                      <div
-                        key={field.id}
-                        className="flex items-center p-3 border rounded-md hover:bg-gray-50 cursor-pointer"
-                        onClick={() => addField(field.id)}
-                      >
-                        <div className="h-8 w-8 bg-blue-50 rounded-md flex items-center justify-center mr-3">
-                          <field.icon className="h-4 w-4 text-blue-600" />
-                        </div>
-                        <div>
-                          <div className="font-medium text-sm">{field.name}</div>
-                          <div className="text-xs text-gray-500">{field.description}</div>
-                        </div>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="ml-auto h-7 w-7 p-0"
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            addField(field.id)
-                          }}
-                        >
-                          <Plus className="h-4 w-4" />
-                        </Button>
+                <div className="p-4">
+                  <Card>
+                    <CardContent className="p-4">
+                      <h3 className="text-sm font-medium mb-3">Form Fields</h3>
+                      <div className="grid grid-cols-1 gap-2">
+                        {basicFields.map((field) => (
+                          <div
+                            key={field.id}
+                            className="flex items-center p-3 border rounded-md hover:bg-gray-50 cursor-pointer"
+                            onClick={() => addField(field.id)}
+                            draggable
+                            onDragStart={(e) => {
+                              e.dataTransfer.setData("text/plain", field.id)
+                              e.dataTransfer.effectAllowed = "move"
+                            }}
+                          >
+                            <div className="h-8 w-8 bg-blue-50 rounded-md flex items-center justify-center mr-3">
+                              <field.icon className="h-4 w-4 text-blue-600" />
+                            </div>
+                            <div>
+                              <div className="font-medium text-sm">{field.name}</div>
+                              <div className="text-xs text-gray-500">{field.description}</div>
+                            </div>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="ml-auto h-7 w-7 p-0"
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                addField(field.id)
+                              }}
+                            >
+                              <Plus className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        ))}
                       </div>
-                    ))}
-                  </div>
+                    </CardContent>
+                  </Card>
                 </div>
               </ScrollArea>
             </TabsContent>
@@ -275,7 +319,58 @@ export default function FullScreenFormBuilder({ formData, onFieldsChange, onStyl
 
             <TabsContent value="settings" className="flex-1 p-0 m-0">
               <ScrollArea className="h-[calc(100vh-4rem)]">
-                <SettingsPanel settings={formData.settings} onSettingsChange={onSettingsChange} />
+                <div className="p-4">
+                  <Card>
+                    <CardContent className="p-4 space-y-4">
+                      <div className="space-y-2">
+                        <h3 className="text-sm font-medium">Form Settings</h3>
+                        <div className="space-y-4">
+                          <div className="space-y-2">
+                            <Label>Submit Button Text</Label>
+                            <Input
+                              value={formData.settings?.submitButtonText || "Submit"}
+                              onChange={(e) =>
+                                onSettingsChange({
+                                  ...formData.settings,
+                                  submitButtonText: e.target.value,
+                                })
+                              }
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Success Message</Label>
+                            <Textarea
+                              value={formData.settings?.successMessage || "Thank you for your submission!"}
+                              onChange={(e) =>
+                                onSettingsChange({
+                                  ...formData.settings,
+                                  successMessage: e.target.value,
+                                })
+                              }
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Redirect URL (Optional)</Label>
+                            <Input
+                              type="url"
+                              placeholder="https://example.com/thank-you"
+                              value={formData.settings?.redirectUrl || ""}
+                              onChange={(e) =>
+                                onSettingsChange({
+                                  ...formData.settings,
+                                  redirectUrl: e.target.value,
+                                })
+                              }
+                            />
+                            <div className="text-xs text-gray-500">Leave empty to show success message instead</div>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
               </ScrollArea>
             </TabsContent>
           </Tabs>
@@ -315,22 +410,24 @@ export default function FullScreenFormBuilder({ formData, onFieldsChange, onStyl
             </div>
           </div>
 
-          <ScrollArea className="flex-1">
-            <SortableContext items={formData.fields.map((field) => field.id)} strategy={verticalListSortingStrategy}>
-              <FormCanvas
-                ref={canvasRef}
-                formData={formData}
-                selectedField={selectedField}
-                onSelectField={(field) => {
-                  setSelectedField(field)
-                }}
-                onUpdateField={updateField}
-                onRemoveField={removeField}
-                onDuplicateField={duplicateField}
-                dropIndicator={dropIndicator}
-              />
-            </SortableContext>
-          </ScrollArea>
+          <div className="flex-1 overflow-auto" style={getBackgroundStyles()}>
+            <ScrollArea className="h-full">
+              <SortableContext items={formData.fields.map((field) => field.id)} strategy={verticalListSortingStrategy}>
+                <FormCanvas
+                  ref={canvasRef}
+                  formData={formData}
+                  selectedField={selectedField}
+                  onSelectField={(field) => {
+                    setSelectedField(field)
+                  }}
+                  onUpdateField={updateField}
+                  onRemoveField={removeField}
+                  onDuplicateField={duplicateField}
+                  dropIndicator={dropIndicator}
+                />
+              </SortableContext>
+            </ScrollArea>
+          </div>
         </div>
 
         {/* Right Properties Panel - Only shown when a field is selected */}
