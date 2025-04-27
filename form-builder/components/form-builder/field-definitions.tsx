@@ -1,196 +1,82 @@
-import {
-  Type,
-  Mail,
-  AlignLeft,
-  List,
-  CheckSquare,
-  CircleDot,
-  Hash,
-  Calendar,
-  Phone,
-  Upload,
-  Clock,
-  SeparatorHorizontal,
-  ImageIcon,
-  FileVideo,
-  FileAudio,
-  Code,
-  Heading1,
-  Heading2,
-  Heading3,
-  NotepadTextIcon as Paragraph,
-} from "lucide-react"
+import { Type, Mail, AlignLeft, CheckSquare, CircleDot, Hash, Calendar, Upload, Clock } from "lucide-react"
+import { ListFilter } from "lucide-react"
 
-// Basic field types - Added Time to basic fields as requested
+// Basic field types - simplified for MVP
 export const basicFields = [
   {
     id: "text",
-    name: "Text Field",
+    name: "Text",
+    description: "Short text like a name",
     icon: Type,
-    description: "Short answer text",
-    defaultPlaceholder: "Enter text here",
+    defaultPlaceholder: "Enter text",
   },
   {
     id: "email",
     name: "Email",
+    description: "Email address input",
     icon: Mail,
-    description: "Email address",
-    defaultPlaceholder: "Enter your email",
+    defaultPlaceholder: "Enter email",
   },
   {
     id: "textarea",
-    name: "Text Area",
+    name: "Paragraph",
+    description: "Long form text",
     icon: AlignLeft,
-    description: "Long answer text",
-    defaultPlaceholder: "Enter your message here",
+    defaultPlaceholder: "Enter paragraph text",
+  },
+  {
+    id: "number",
+    name: "Number",
+    description: "Numerical input",
+    icon: Hash,
+    defaultPlaceholder: "Enter number",
   },
   {
     id: "select",
     name: "Dropdown",
-    icon: List,
-    description: "Select from options",
+    description: "Choose from a list",
+    icon: ListFilter,
     defaultPlaceholder: "Select an option",
     defaultOptions: ["Option 1", "Option 2", "Option 3"],
   },
   {
     id: "checkbox",
-    name: "Checkbox Group",
+    name: "Checkboxes",
+    description: "Multiple choice selection",
     icon: CheckSquare,
-    description: "Multiple choice",
     defaultOptions: ["Option 1", "Option 2", "Option 3"],
   },
   {
     id: "radio",
-    name: "Radio Group",
+    name: "Radio Buttons",
+    description: "Single choice selection",
     icon: CircleDot,
-    description: "Single choice",
     defaultOptions: ["Option 1", "Option 2", "Option 3"],
-  },
-  {
-    id: "number",
-    name: "Number",
-    icon: Hash,
-    description: "Numeric input",
-    defaultPlaceholder: "Enter a number",
   },
   {
     id: "date",
     name: "Date",
-    icon: Calendar,
     description: "Date picker",
-  },
-  {
-    id: "phone",
-    name: "Phone",
-    icon: Phone,
-    description: "Phone number",
-    defaultPlaceholder: "Enter your phone number",
-  },
-  {
-    id: "file",
-    name: "File Upload",
-    icon: Upload,
-    description: "File attachment",
+    icon: Calendar,
+    defaultPlaceholder: "Select date",
   },
   {
     id: "time",
     name: "Time",
-    icon: Clock,
     description: "Time picker",
+    icon: Clock,
+    defaultPlaceholder: "Select time",
+  },
+  {
+    id: "file",
+    name: "File Upload",
+    description: "File attachment field",
+    icon: Upload,
+    defaultPlaceholder: "Upload file",
   },
 ]
 
-// Layout components - Removed unnecessary fields as requested
-export const layoutComponents = [
-  {
-    id: "heading1",
-    name: "Heading 1",
-    icon: Heading1,
-    description: "Large heading",
-    defaultData: {
-      text: "Heading 1",
-    },
-  },
-  {
-    id: "heading2",
-    name: "Heading 2",
-    icon: Heading2,
-    description: "Medium heading",
-    defaultData: {
-      text: "Heading 2",
-    },
-  },
-  {
-    id: "heading3",
-    name: "Heading 3",
-    icon: Heading3,
-    description: "Small heading",
-    defaultData: {
-      text: "Heading 3",
-    },
-  },
-  {
-    id: "paragraph",
-    name: "Paragraph",
-    icon: Paragraph,
-    description: "Text paragraph",
-    defaultData: {
-      text: "Enter your text here",
-    },
-  },
-  {
-    id: "divider",
-    name: "Divider",
-    icon: SeparatorHorizontal,
-    description: "Horizontal separator",
-  },
-]
-
-// Media components - Kept all media components as requested
-export const mediaComponents = [
-  {
-    id: "image",
-    name: "Image",
-    icon: ImageIcon,
-    description: "Display an image",
-    defaultData: {
-      url: "",
-      alt: "Image description",
-      width: 300,
-      height: 200,
-    },
-  },
-  {
-    id: "video",
-    name: "Video",
-    icon: FileVideo,
-    description: "Embed a video",
-    defaultData: {
-      url: "",
-      width: 560,
-      height: 315,
-    },
-  },
-  {
-    id: "audio",
-    name: "Audio",
-    icon: FileAudio,
-    description: "Embed audio",
-    defaultData: {
-      url: "",
-    },
-  },
-  {
-    id: "embed",
-    name: "Embed",
-    icon: Code,
-    description: "Embed external content",
-    defaultData: {
-      code: "",
-      width: "100%",
-      height: 300,
-    },
-  },
-]
-
+// Empty arrays for unused categories in MVP
+export const layoutComponents = []
+export const mediaComponents = []
 export const advancedFields = []
